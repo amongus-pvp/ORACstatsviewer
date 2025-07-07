@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 from zoneinfo import ZoneInfo
+import numpy as np
 
 df = pd.read_csv("orac_submissions.csv")
 
@@ -47,6 +48,26 @@ plt.title("Histogram of Submissions by Hour")
 plt.xlabel("Hour of Day")
 plt.ylabel("Number of Submissions")
 plt.xticks(range(min_hour, max_hour + 1))
+plt.grid(True, linestyle='--', alpha=0.5)
+plt.tight_layout()
+
+start_time = df_sorted["datetime"].min()
+end_time = df_sorted["datetime"].max()
+
+sample_times = pd.date_range(start=start_time, end=end_time, freq="6h")
+
+window_counts = []
+
+for t in sample_times:
+    t_start = t - pd.Timedelta(days=7)
+    count = ((df_sorted["datetime"] >= t_start) & (df_sorted["datetime"] <= t)).sum()
+    window_counts.append(count)
+
+plt.figure(figsize=(10, 5))
+plt.plot(sample_times, window_counts, color='blue', linewidth=2)
+plt.title("Submission Activity (Rolling 7-Day Window, Sampled Every 6 Hours)")
+plt.xlabel("Datetime")
+plt.ylabel("Submissions in Past 7 Days")
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
 
