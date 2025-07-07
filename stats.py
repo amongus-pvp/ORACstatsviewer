@@ -31,7 +31,7 @@ plt.figure(figsize=(10, 5))
 plt.plot(df_sorted["datetime"], df_sorted["cumulative"], linestyle='-', marker='o', markersize=3, color='gray', label='All Submissions')
 plt.scatter(solved_times, solved_counts, color='green', label='Problem Solved (100)', zorder=5)
 
-plt.title("Cumulative Submissions Over Time (Brisbane Time)")
+plt.title("Cumulative Submissions Over Time")
 plt.xlabel("Datetime")
 plt.ylabel("Total Submissions")
 plt.legend()
