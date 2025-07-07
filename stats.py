@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from collections import Counter
 from zoneinfo import ZoneInfo
 import numpy as np
+import matplotlib.dates as mdates
 
 df = pd.read_csv("orac_submissions.csv")
 
@@ -69,6 +70,12 @@ plt.title("Submission Activity (Rolling 7-Day Window)")
 plt.xlabel("Datetime")
 plt.ylabel("Submissions in Past 7 Days")
 plt.grid(True, linestyle='--', alpha=0.5)
+
+# Set date ticks every 3 months
+ax = plt.gca()
+ax.xaxis.set_major_locator(mdates.MonthLocator(interval=3)) # change this number for ticker
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+
 plt.tight_layout()
 
 plt.show()
