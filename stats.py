@@ -65,7 +65,7 @@ for t in sample_times:
 
 plt.figure(figsize=(10, 5))
 plt.plot(sample_times, window_counts, color='blue', linewidth=2)
-plt.title("Submission Activity (Rolling 7-Day Window, Sampled Every 6 Hours)")
+plt.title("Submission Activity (Rolling 7-Day Window)")
 plt.xlabel("Datetime")
 plt.ylabel("Submissions in Past 7 Days")
 plt.grid(True, linestyle='--', alpha=0.5)
