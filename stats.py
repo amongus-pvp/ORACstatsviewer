@@ -16,41 +16,55 @@ df_sorted = df.sort_values("datetime").reset_index(drop=True)
 
 df_sorted["cumulative"] = range(1, len(df_sorted) + 1)
 
+colors = []
 solved_set = set()
-solved_times = []
-solved_counts = []
 
 for i, row in df_sorted.iterrows():
     pname = row["problem_name"]
     score = row["score"]
-    if score == 100 and pname not in solved_set:
-        solved_set.add(pname)
-        solved_times.append(row["datetime"])
-        solved_counts.append(row["cumulative"])
+
+    if pd.isna(score):
+        colors.append("gray")
+    elif score == 0:
+        colors.append("red")
+    elif 0 < score < 100:
+        colors.append("yellow")
+    elif score == 100:
+        if pname not in solved_set:
+            colors.append("green")
+            solved_set.add(pname)
+        else:
+            colors.append("gray")
+    else:
+        colors.append("gray")
 
 plt.figure(figsize=(10, 5))
-plt.plot(df_sorted["datetime"], df_sorted["cumulative"], linestyle='-', marker='o', markersize=3, color='gray', label='All Submissions')
-plt.scatter(solved_times, solved_counts, color='green', label='Problem Solved (100)', zorder=5)
 
-plt.title("Cumulative Submissions Over Time")
+# --- Black line connecting all points ---
+plt.plot(df_sorted["datetime"], df_sorted["cumulative"], color='black', linewidth=1, zorder=1)
+
+# --- Colored dots ---
+plt.scatter(df_sorted["datetime"], df_sorted["cumulative"], c=colors, s=15, zorder=2)
+
+# --- Title and labels ---
+plt.title("Cumulative Submissions Over Time (Brisbane Time)")
 plt.xlabel("Datetime")
 plt.ylabel("Total Submissions")
-plt.legend()
+
+# --- Custom legend ---
+from matplotlib.lines import Line2D
+legend_elements = [
+    Line2D([0], [0], marker='o', color='w', label='First Solve (100)', markerfacecolor='green', markersize=8),
+    Line2D([0], [0], marker='o', color='w', label='Score = 0', markerfacecolor='red', markersize=8),
+    Line2D([0], [0], marker='o', color='w', label='0 < Score < 100', markerfacecolor='yellow', markersize=8),
+    Line2D([0], [0], marker='o', color='w', label='Other', markerfacecolor='gray', markersize=8),
+]
+plt.legend(handles=legend_elements)
+
 plt.grid(True, linestyle='--', alpha=0.5)
 plt.tight_layout()
 
-df_sorted["hour"] = df_sorted["datetime"].dt.hour
-min_hour = max(0, df_sorted["hour"].min() - 1)
-max_hour = min(23, df_sorted["hour"].max() + 1)
 
-plt.figure(figsize=(10, 5))
-plt.hist(df_sorted["hour"], bins=range(min_hour, max_hour + 2), edgecolor='black', align='left')
-plt.title("Histogram of Submissions by Hour")
-plt.xlabel("Hour of Day")
-plt.ylabel("Number of Submissions")
-plt.xticks(range(min_hour, max_hour + 1))
-plt.grid(True, linestyle='--', alpha=0.5)
-plt.tight_layout()
 
 start_time = df_sorted["datetime"].min()
 end_time = df_sorted["datetime"].max()
